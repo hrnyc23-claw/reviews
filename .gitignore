@@ -1,0 +1,5 @@
+node_modules
+data/*.csv
+data/*.json
+data/dump
+.DS_Store
