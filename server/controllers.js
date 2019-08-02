@@ -1,4 +1,4 @@
-const { readReviews, readMetadata, updateReviewHelpfulness, updateReviewReported, createReview } = require('./model');
+const { readReviews, readMetadata, updateReviewHelpfulness, updateReviewReported, createReview } = require('./dbModel');
 
 const isValidCharacteristics = (characteristics) => {
   let counter = 0;
