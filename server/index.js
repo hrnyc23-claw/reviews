@@ -7,7 +7,7 @@ const router = require('./routes');
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
-const port = 3000;
+const port = 80;
 
 const defaultCorsHeaders = {
   'Access-Control-Allow-Origin': '*',
