@@ -24,17 +24,10 @@ const sortReviews = (reviews, sort) => {
   }
 };
 
-const filterReviews = (reviews) => {
-  reviews.filter(ele => {
-    return ele.reported === false
-  });
-}
-
 const getRatings = (reviews) => {
   let ratings = {};
   reviews.forEach((ele) => {
     ratings[ele.rating] = ratings[ele.rating] + 1 || 1;
-    recommended[parseInt(ele.recommended)] = recommended[parseInt(ele.recommended)] + 1 || 1;
   });
   return ratings;
 };
@@ -42,7 +35,8 @@ const getRatings = (reviews) => {
 const getRecommended = (reviews) => {
   let recommended = {};
   reviews.forEach((ele) => {
-    recommended[parseInt(ele.recommended)] = recommended[parseInt(ele.recommended)] + 1 || 1;
+    let bool = ele.recommended ? 1 : 0;
+    recommended[bool] = recommended[bool] + 1 || 1;
   });
   return recommended;
 }
@@ -54,37 +48,40 @@ const averageAsString = (array) => {
 
 const getCharacteristicsAverages = (characteristics) => {
   let characteristicsAverages = {};
-  for (let key in characteristics) {
-    if (characteristics[key].length !== 0) {
-      characteristicsAverages[key] = averageAsString(characteristics[key]);
+  characteristics.forEach((value, key) => {
+    if (value.length !== 0) {
+      characteristicsAverages[key] = averageAsString(value);
     } else {
       characteristicsAverages[key] = (0).toFixed(4).toString();
     }
-  }
+  });
   return characteristicsAverages;
 }
 
 const updateCharacteristics = (currentCharacteristics, newCharacteristics) => {
   for (let key in newCharacteristics) {
-    currentCharacteristics[key].push(newCharacteristics[key]);
+    let values = currentCharacteristics.get(key)
+    values = Array.isArray(values) ? values : [];
+    values.push(newCharacteristics[key]);
+    currentCharacteristics.set(key, values);
   }
 }
 
-const addReview = (currentReview, newReview, reviewId, productId) => {
-  let collisionBuffer = .00001
+const addReview = (currentReviews, newReview, productId) => {
+  let collisionBuffer = .000002;
   let newId = Math.floor((Math.random() + collisionBuffer) * Math.pow(10, 12))
-  currentReview.push({
+  currentReviews.push({
     photos: newReview.photos,
     id: newId,
     product_id: productId,
-    rating: body.rating,
-    date: new Date(body.date),
-    summary: body.summary,
-    body: body.body,
-    recommended: false,
+    rating: newReview.rating,
+    date: new Date(newReview.date),
+    summary: newReview.summary,
+    body: newReview.body,
+    recommended: newReview.recommended,
     reported: false,
-    reviewer_name: body.name,
-    reviewer_email: body.email,
+    reviewer_name: newReview.name,
+    reviewer_email: newReview.email,
     response: "",
     helpfulness: 0
   });
@@ -92,11 +89,13 @@ const addReview = (currentReview, newReview, reviewId, productId) => {
 }
 
 module.exports = {
-  getReviews: (productId, page = 1, count = 5, sort = 'relevant') => {
+  readReviews: (productId, page = 1, count = 5, sort = 'relevant') => {
     return ProductReview.findOne({id: productId})
     .then(({reviews}) => {
       sortReviews(reviews, sort);
-      filterReviews(reviews);
+      reviews = reviews.filter(ele => {
+        return ele.reported === false
+      });
       let pages = Math.ceil(reviews.length / count) - 1;
       return {
         product_id: productId,
@@ -105,9 +104,10 @@ module.exports = {
         reviews: reviews.slice(Math.min(page - 1, pages) * count, Math.min(page * count - 1, reviews.length))
       }
     })
-    .catch(() => false)
+    .catch((err) => err)
   },
-  getMetadata: (productId) => {
+
+  readMetadata: (productId) => {
     return Promise.all([
       ProductCharacteristic.findOne({product_id: productId}),
       ProductReview.findOne({id: productId})
@@ -121,41 +121,47 @@ module.exports = {
         recommended: recommended,
         characteristics: characteristicsAverages
       };
-    }).catch(() => false)
+    }).catch((err) => err)
   },
-  postReview: (productId, body) => {
+
+  createReview: (productId, body) => {
     return Promise.all([
       ProductCharacteristic.findOne({product_id: productId}),
       ProductReview.findOne({id: productId})
     ]).then(results => {
-      let newCharacteristics = updateCharacteristics(results[0].characteristics);
-      let newId = addReview(results[1].reviews, body, results[2] + 1, productId);
+      updateCharacteristics(results[0].characteristics, body.characteristics);
+      let newId = addReview(results[1].reviews, body, productId);
       return Promise.all([
-        ProductCharacteristic.updateOne({product_id: productId}, {characteristics: newCharacteristics}),
+        ProductCharacteristic.updateOne({product_id: productId}, {characteristics: results[0].characteristics}),
         ProductReview.updateOne({id: productId}, {reviews: results[1].reviews}),
         ReviewMap.create({id: newId, product_id: productId})
       ]).then(() => true)
-      .catch(() => false)
-    }).catch(() => false)
+      .catch((err) => err)
+    }).catch((err) => err)
   },
-  putReviewHelpfulness: (reviewId) => {
+
+  updateReviewHelpfulness: (reviewId) => {
     return ReviewMap.findOne({id: reviewId})
     .then(review => {
-      let productId = review.product_id;
-      return ProductReview.findOne({id: productId})
-      .then(({reviews}) => {
-        reviews.forEach(ele => {
-          if (ele.id === reviewId) {
-            ele.helpfulness += 1;
-          }
-        });
-        return ProductReview.updateOne({id: productId}, {reviews: reviews})
-        .then(() => true)
-        .catch(() => false)
-      }).catch(() => false)
-    }).catch(() => false)
+      if (review === null || review === undefined) {
+        return false;
+      } else {
+        let productId = review.product_id;
+        return ProductReview.findOne({id: productId})
+        .then(({reviews}) => {
+          reviews.forEach(ele => {
+            if (ele.id === reviewId) {
+              ele.helpfulness += 1;
+            }
+          });
+          return ProductReview.updateOne({id: productId}, {reviews: reviews})
+          .then(() => true)
+          .catch((err) => err)
+        }).catch((err) => err)
+    }}).catch((err) => err)
   },
-  putReviewReported: (reviewId) => {
+  
+  updateReviewReported: (reviewId) => {
     return ReviewMap.findOne({id: reviewId})
     .then(review => {
       let productId = review.product_id;

@@ -10,3 +10,5 @@ router.post('/:product_id', postReview);
 router.put('/helpful/:review_id', putHelpfulness);
 
 router.put('/report/:review_id', putReported);
+
+module.exports = router;
