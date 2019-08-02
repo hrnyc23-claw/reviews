@@ -16,8 +16,9 @@ const defaultCorsHeaders = {
   'access-control-max-age': 10
 };
 
-app.all('/reviews', (request, response, next) => {
-  response.set(defaultCorsHeaders);
+app.all('/reviews', (req, res, next) => {
+  console.log(req.path)
+  res.set(defaultCorsHeaders);
   next();
 });
 
