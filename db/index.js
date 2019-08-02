@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useCreateIndex: true });
+const connect = () => {
+  mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useCreateIndex: true }).then(() => {
+    console.log('Connected to mongo')
+  }).catch(err => {
+    console.error(err);
+    setTimeout(connect, 30000);
+  })
+};
+
+connect();
 
 mongoose.Promise = global.Promise;
 

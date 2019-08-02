@@ -3,7 +3,7 @@ data/*.csv
 data/*.json
 data/dump
 .DS_Store
-dump
 data
-docker-compose.yml
 Dockerfile
+docker-compose.yml
+dump

@@ -90,6 +90,7 @@ const addReview = (currentReviews, newReview, productId) => {
 
 module.exports = {
   readReviews: (productId, page = 1, count = 5, sort = 'relevant') => {
+    console.log(productId)
     return ProductReview.findOne({id: productId})
     .then(({reviews}) => {
       sortReviews(reviews, sort);
