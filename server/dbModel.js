@@ -19,7 +19,7 @@ const sortReviews = (reviews, sort) => {
     });
   } else if (sort === 'helpful') {
     reviews.sort((a, b) => {
-      return a.helpfulness - b.helpfulness;
+      return b.helpfulness - a.helpfulness;
     });
   }
 };
