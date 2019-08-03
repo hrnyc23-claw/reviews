@@ -1,4 +1,5 @@
-const { readReviews, readMetadata, updateReviewHelpfulness, updateReviewReported, createReview } = require('./dbModel');
+const { readReviews, readMetadata, updateReviewHelpfulness, updateReviewReported, createReview, processReviewsData } = require('./dbModel');
+const {getCacheMeta, getCacheReview, setCacheMeta, setCacheReview} = require('./redisModel');
 
 const isValidCharacteristics = (characteristics) => {
   let counter = 0;
@@ -75,8 +76,19 @@ module.exports = {
     if (isNaN(parseInt(productId)) || productId === undefined) {
       res.status(400).send('Parameters are invalid');
     } else {
-      readReviews(productId, page, count, sort).then(list => {
-        res.send(list);
+      getCacheReview(productId).then(reviews => {
+        console.log(reviews);
+        if (reviews === null) {
+          readReviews(productId, page, count, sort).then(list => {
+            res.send(list);
+          }).catch(err => {
+            console.error(err);
+            res.sendStatus(500);
+          });
+        } else {
+          reviews = JSON.parse(reviews);
+          res.send(processReviewsData(reviews, page, count, sort, productId));
+        }
       }).catch(err => {
         console.error(err);
         res.sendStatus(500);
@@ -88,12 +100,21 @@ module.exports = {
     if (isNaN(parseInt(productId)) || productId === undefined) {
       res.status(400).send('Parameters are invalid');
     } else {
-      readMetadata(productId).then(meta => {
-        res.send(meta);
+      getCacheMeta(productId).then(meta => {
+        if (meta === null) {
+          readMetadata(productId).then(meta => {
+            res.send(meta);
+          }).catch(err => {
+            console.error(err);
+            res.sendStatus(500);
+          });
+        } else {
+          res.send(meta);
+        }
       }).catch(err => {
         console.error(err);
         res.sendStatus(500);
-      });
+      })
     }
   },
   postReview: (req, res) => {
