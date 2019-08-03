@@ -16,12 +16,21 @@ const defaultCorsHeaders = {
   'access-control-max-age': 10
 };
 
-app.all('/reviews', (req, res, next) => {
+app.use('/reviews', (req, res, next) => {
   res.set(defaultCorsHeaders);
-  next();
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
 });
 
 app.use('/reviews', router);
+
+app.all('/interactions', (req, res) => {
+  res.set(defaultCorsHeaders);
+  res.sendStatus(201);
+});
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

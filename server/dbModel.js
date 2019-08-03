@@ -4,7 +4,7 @@ const sortReviews = (reviews, sort) => {
   if (sort === 'relevant') {
     reviews.sort((a, b) => {
       if (a.date === b.date) {
-        return a.helpfulness - b.helpfulness;
+        return b.helpfulness - a.helpfulness;
       } else {
         let dateA = new Date(a.date);
         let dateB = new Date(b.date);
@@ -90,7 +90,6 @@ const addReview = (currentReviews, newReview, productId) => {
 
 module.exports = {
   readReviews: (productId, page = 1, count = 5, sort = 'relevant') => {
-    console.log(productId)
     return ProductReview.findOne({id: productId})
     .then(({reviews}) => {
       sortReviews(reviews, sort);

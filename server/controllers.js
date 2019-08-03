@@ -21,28 +21,31 @@ const isConforming = (review) => {
   if (review.rating === undefined || review.rating < 0 || review.rating > 5) {
     return false;
   }
-  if (isNaN(Date.parse(review.date))) {
-    return false;
-  }
   if (review.summary === undefined) {
     return false;
   }
   if (review.body === undefined) {
     return false;
   }
-  if (review.reviewer_name === undefined) {
+  if (review.name === undefined) {
     return false;
   }
-  if (review.reviewer_email === undefined) {
+  if (review.email === undefined) {
     return false;
   }
-  if (review.recommended !== true && review.recommended !== false) {
+  if (review.recommend !== true && review.recommend !== false) {
     return false;
   }
   if (!isValidCharacteristics(review.characteristics)) {
     return false
   }
   return true;
+};
+
+const convertReview = (review) => {
+  review.date = (new Date()).toISOString();
+  review.recommended = review.recommend;
+  delete review.recommend;
 };
 
 const handlePut = (req, res, handler) => {
@@ -96,12 +99,13 @@ module.exports = {
   postReview: (req, res) => {
     let productId = parseInt(req.params.product_id);
     let review = req.body;
+    review.rating = parseInt(review.rating);
     if (isConforming(review)) {
       if (isNaN(parseInt(productId)) || productId === undefined) {
         res.status(400).send('Parameters are invalid');
       } else {
+        convertReview(review);
         createReview(productId, review).then(success => {
-          console.log(success);
           if (success === true) {
             res.sendStatus(201);
           } else {
