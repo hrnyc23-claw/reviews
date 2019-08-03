@@ -8,14 +8,14 @@ const sortReviews = (reviews, sort) => {
       } else {
         let dateA = new Date(a.date);
         let dateB = new Date(b.date);
-        return dateA.getTime() - dateB.getTime();
+        return dateB.getTime() - dateA.getTime();
       }
     });
   } else if (sort === 'newest') {
     reviews.sort((a, b) => {
       let dateA = new Date(a.date);
       let dateB = new Date(b.date);
-      return dateA.getTime() - dateB.getTime();
+      return dateB.getTime() - dateA.getTime();
     });
   } else if (sort === 'helpfulness') {
     reviews.sort((a, b) => {
