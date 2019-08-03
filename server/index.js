@@ -17,7 +17,6 @@ const defaultCorsHeaders = {
 };
 
 app.all('/reviews', (req, res, next) => {
-  console.log(req.path)
   res.set(defaultCorsHeaders);
   next();
 });

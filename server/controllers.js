@@ -16,35 +16,27 @@ const isValidCharacteristics = (characteristics) => {
 
 const isConforming = (review) => {
   if (!Array.isArray(review.photos)) {
-    console.log('Photo ', review.photos)
     return false;
   }
   if (review.rating === undefined || review.rating < 0 || review.rating > 5) {
-    console.log('Rating ', review.rating)
     return false;
   }
   if (isNaN(Date.parse(review.date))) {
-    console.log('Date ', review.date)
     return false;
   }
   if (review.summary === undefined) {
-    console.log('Summary ', review.summary)
     return false;
   }
   if (review.body === undefined) {
-    console.log('Body ', review.body)
     return false;
   }
   if (review.reviewer_name === undefined) {
-    console.log('Name ', review.reviewer_name)
     return false;
   }
   if (review.reviewer_email === undefined) {
-    console.log('email ', review.reviewer_email)
     return false;
   }
   if (review.recommended !== true && review.recommended !== false) {
-    console.log('Recommended ', review.recommended)
     return false;
   }
   if (!isValidCharacteristics(review.characteristics)) {
@@ -74,10 +66,13 @@ const handlePut = (req, res, handler) => {
 module.exports = {
   getReviews: (req, res) => {
     let productId = parseInt(req.params.product_id);
+    let page = parseInt(req.query.page) || undefined;
+    let count = parseInt(req.query.count) || undefined;
+    let sort = req.query.sort;
     if (isNaN(parseInt(productId)) || productId === undefined) {
       res.status(400).send('Parameters are invalid');
     } else {
-      readReviews(productId).then(list => {
+      readReviews(productId, page, count, sort).then(list => {
         res.send(list);
       }).catch(err => {
         console.error(err);
