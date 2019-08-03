@@ -11,7 +11,7 @@ const sortReviews = (reviews, sort) => {
         return dateA.getTime() - dateB.getTime();
       }
     });
-  } else if (sort === 'new') {
+  } else if (sort === 'newest') {
     reviews.sort((a, b) => {
       let dateA = new Date(a.date);
       let dateB = new Date(b.date);
