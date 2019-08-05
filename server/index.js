@@ -33,11 +33,10 @@ app.all('/interactions', (req, res) => {
   res.sendStatus(201);
 });
 
-app.use('/loaderio-e3d06dad53f752b18aa53430b009e7bb', (req, res, next) => {
+app.get('/loaderio-e3d06dad53f752b18aa53430b009e7bb', (req, res) => {
   res.set(defaultCorsHeaders);
+  res.sendFile(path.join(__dirname, 'loaderio-e3d06dad53f752b18aa53430b009e7bb.txt'));
 });
-
-app.use('/loaderio-e3d06dad53f752b18aa53430b009e7bb', express.static(path.join(__dirname, 'loaderio-e3d06dad53f752b18aa53430b009e7bb.txt')));
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
