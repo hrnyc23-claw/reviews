@@ -49,7 +49,7 @@ let chunk;
 
 process.stdin.on('readable', async () => {
   while ((chunk = process.stdin.read()) !== null) {
-    let testResults = await runQueryTests('list');
+    let testResults = await runQueryTests('meta');
 
     let firstQueryAvg = average(testResults.firstQueries);
     let subsequentQueryAvg = average(testResults.subsequentQueryAvgs);
