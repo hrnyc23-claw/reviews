@@ -6,7 +6,7 @@ const router = require('./routes');
 const path = require('path');
 
 app.use(bodyParser.json());
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 const port = 3000;
 
