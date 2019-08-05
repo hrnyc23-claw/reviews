@@ -32,6 +32,12 @@ app.all('/interactions', (req, res) => {
   res.sendStatus(201);
 });
 
+app.use('/loaderio-e3d06dad53f752b18aa53430b009e7bb', (req, res, next) => {
+  res.set(defaultCorsHeaders);
+});
+
+app.use('/loaderio-e3d06dad53f752b18aa53430b009e7bb', express.static(path.join(__dirname, 'loaderio-e3d06dad53f752b18aa53430b009e7bb.txt')));
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 })
