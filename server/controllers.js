@@ -77,7 +77,6 @@ module.exports = {
       res.status(400).send('Parameters are invalid');
     } else {
       getCacheReview(productId).then(reviews => {
-        console.log(reviews);
         if (reviews === null) {
           readReviews(productId, page, count, sort).then(list => {
             res.send(list);
