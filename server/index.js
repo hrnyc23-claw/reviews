@@ -38,6 +38,11 @@ app.get('/loaderio-fc46d0258055632d3b8902b1f1dbad71', (req, res) => {
   res.sendFile(path.join(__dirname, 'loaderio-fc46d0258055632d3b8902b1f1dbad71.txt'));
 });
 
+app.get('/health', (req, res) => {
+  res.set(defaultCorsHeaders);
+  res.send(200);
+});
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 })
