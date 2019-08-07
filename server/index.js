@@ -33,9 +33,9 @@ app.all('/interactions', (req, res) => {
   res.sendStatus(201);
 });
 
-app.get('/loaderio-e3d06dad53f752b18aa53430b009e7bb', (req, res) => {
+app.get('/loaderio-fc46d0258055632d3b8902b1f1dbad71', (req, res) => {
   res.set(defaultCorsHeaders);
-  res.sendFile(path.join(__dirname, 'loaderio-e3d06dad53f752b18aa53430b009e7bb.txt'));
+  res.sendFile(path.join(__dirname, 'loaderio-fc46d0258055632d3b8902b1f1dbad71.txt'));
 });
 
 app.listen(port, () => {
