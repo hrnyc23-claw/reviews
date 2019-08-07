@@ -33,9 +33,9 @@ app.all('/interactions', (req, res) => {
   res.sendStatus(201);
 });
 
-app.get('/loaderio-fc46d0258055632d3b8902b1f1dbad71', (req, res) => {
+app.get('/lloaderio-c0f68774e41bbc00a0eb6848768034fd', (req, res) => {
   res.set(defaultCorsHeaders);
-  res.sendFile(path.join(__dirname, 'loaderio-fc46d0258055632d3b8902b1f1dbad71.txt'));
+  res.sendFile(path.join(__dirname, 'lloaderio-c0f68774e41bbc00a0eb6848768034fd.txt'));
 });
 
 app.get('/health', (req, res) => {
