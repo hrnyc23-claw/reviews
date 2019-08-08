@@ -1,4 +1,5 @@
 const { ProductCharacteristic, ProductReview, ReviewMap } = require('../db/index');
+const {setCacheReview, setCacheMeta} = require('./redisModel');
 
 const sortReviews = (reviews, sort) => {
   if (sort === 'relevant') {
@@ -92,17 +93,8 @@ module.exports = {
   readReviews: (productId, page = 1, count = 5, sort = 'relevant') => {
     return ProductReview.findOne({id: productId})
     .then(({reviews}) => {
-      sortReviews(reviews, sort);
-      reviews = reviews.filter(ele => {
-        return ele.reported === false
-      });
-      let pages = Math.ceil(reviews.length / count) - 1;
-      return {
-        product_id: productId,
-        page: page,
-        count: count,
-        reviews: reviews.slice(Math.min(page - 1, pages) * count, Math.min(page * count - 1, reviews.length))
-      }
+      setCacheReview(productId, JSON.stringify(reviews));
+      return module.exports.processReviewsData(reviews, page, count, sort);
     })
     .catch((err) => err)
   },
@@ -115,12 +107,14 @@ module.exports = {
       let ratings = getRatings(results[1].reviews);
       let recommended = getRecommended(results[1].reviews);
       let characteristicsAverages = getCharacteristicsAverages(results[0].characteristics);
-      return {
+      let meta = {
         product_id: productId,
         ratings: ratings,
         recommended: recommended,
         characteristics: characteristicsAverages
       };
+      setCacheMeta(productId, JSON.stringify(meta));
+      return meta;
     }).catch((err) => err)
   },
 
@@ -177,5 +171,18 @@ module.exports = {
         .catch(() => false)
       }).catch(() => false)
     }).catch(() => false)
+  },
+  processReviewsData: (reviews, page, count, sort, productId) => {
+    sortReviews(reviews, sort);
+    reviews = reviews.filter(ele => {
+      return ele.reported === false
+    });
+    let pages = Math.ceil(reviews.length / count) - 1;
+    return {
+      product_id: productId,
+      page: page,
+      count: count,
+      reviews: reviews.slice(Math.min(page - 1, pages) * count, Math.min(page * count - 1, reviews.length))
+    }
   }
 }
