@@ -1,11 +1,21 @@
 const redis = require("redis");
 const client = redis.createClient();
+const bluebird = require('bluebird');
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 module.exports = {
-  setReview: (productId, response) => {
-    client.set(`review${productId}`, JSON.stringify(response), 'EX', 30);
+  setCacheReview: (productId, response) => {
+    client.set(`review${productId}`, response, 'EX', 30);
   },
-  setMeta: (productId, response) => {
-    client.set(`meta${productId}`, JSON.stringify(response), 'EX', 30);
+  setCacheMeta: (productId, response) => {
+    client.set(`meta${productId}`, response, 'EX', 30);
+  },
+  getCacheReview: (productId) => {
+    return client.getAsync(`review${productId}`);
+  },
+  getCacheMeta: (productId) => {
+    return client.getAsync(`meta${productId}`);
   }
-}
+};
