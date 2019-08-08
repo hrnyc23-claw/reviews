@@ -3,9 +3,10 @@ const app = express();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const router = require('./routes');
+const path = require('path');
 
 app.use(bodyParser.json());
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 const port = 3000;
 
@@ -30,6 +31,16 @@ app.use('/reviews', router);
 app.all('/interactions', (req, res) => {
   res.set(defaultCorsHeaders);
   res.sendStatus(201);
+});
+
+app.get('/lloaderio-c0f68774e41bbc00a0eb6848768034fd', (req, res) => {
+  res.set(defaultCorsHeaders);
+  res.sendFile(path.join(__dirname, 'lloaderio-c0f68774e41bbc00a0eb6848768034fd.txt'));
+});
+
+app.get('/health', (req, res) => {
+  res.set(defaultCorsHeaders);
+  res.send(200);
 });
 
 app.listen(port, () => {

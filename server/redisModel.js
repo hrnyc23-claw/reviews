@@ -7,10 +7,10 @@ bluebird.promisifyAll(redis.Multi.prototype);
 
 module.exports = {
   setCacheReview: (productId, response) => {
-    client.set(`review${productId}`, response, 'EX', 86400, redis.print);
+    client.set(`review${productId}`, response, 'EX', 30);
   },
   setCacheMeta: (productId, response) => {
-    client.set(`meta${productId}`, response, 'EX', 86400, redis.print);
+    client.set(`meta${productId}`, response, 'EX', 30);
   },
   getCacheReview: (productId) => {
     return client.getAsync(`review${productId}`);
