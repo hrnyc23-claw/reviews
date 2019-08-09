@@ -1,5 +1,5 @@
 const { readReviews, readMetadata, updateReviewHelpfulness, updateReviewReported, createReview, processReviewsData } = require('./dbModel');
-const {getCacheMeta, getCacheReview, setCacheMeta, setCacheReview} = require('./redisModel');
+const {getCacheMeta, getCacheReview} = require('./redisModel');
 
 const isValidCharacteristics = (characteristics) => {
   let counter = 0;

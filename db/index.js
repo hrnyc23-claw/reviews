@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const connect = () => {
-  mongoose.connect('mongodb://ec2-54-165-148-25.compute-1.amazonaws.com/test', { useNewUrlParser: true, useCreateIndex: true }).then(() => {
+  mongoose.connect('mongodb://ec2-54-165-148-25.compute-1.amazonaws.com/test', { useNewUrlParser: true, useCreateIndex: true, poolSize: 100 }).then(() => {
     console.log('Connected to mongo')
   }).catch(err => {
     console.error(err);
